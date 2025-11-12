@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="kk">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SkillMatch – Болашағыңды таңда!</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 text-gray-800">
+  <!-- Header -->
+  <header class="bg-blue-600 text-white p-5 text-center shadow-md">
+    <h1 class="text-3xl font-bold">SkillMatch</h1>
+    <p class="text-lg">Өз қабілетіңе сай мамандықты табуға көмектесетін AI-платформа</p>
+  </header>
+
+  <!-- Hero Section -->
+  <section class="text-center py-10 bg-white">
+    <h2 class="text-2xl font-semibold mb-4">Болашағыңды дәл таңда!</h2>
+    <p class="max-w-2xl mx-auto mb-6">Қызығушылықтарың мен қабілеттерің бойынша қысқа тест тапсырып, өзіңе лайықты мамандықты біл.</p>
+    <button onclick="startTest()" class="bg-blue-600 text-white px-6 py-3 rounded-xl hover:bg-blue-700 transition">Тестті бастау</button>
+  </section>
+
+  <!-- Test Section -->
+  <section id="test-section" class="hidden bg-gray-50 py-10">
+    <div class="max-w-xl mx-auto bg-white p-6 rounded-2xl shadow-lg">
+      <h3 id="question" class="text-lg font-semibold mb-4">Сұрақ</h3>
+      <div id="answers" class="space-y-3"></div>
+    </div>
+  </section>
+
+  <!-- Results -->
+  <section id="result-section" class="hidden text-center py-10 bg-white">
+    <h2 class="text-2xl font-bold mb-4">Саған ұсынылған мамандықтар:</h2>
+    <div id="result-list" class="space-y-3"></div>
+    <button onclick="window.print()" class="mt-6 bg-green-600 text-white px-6 py-3 rounded-xl hover:bg-green-700">Нәтижені шығару</button>
+  </section>
+
+  <!-- About -->
+  <section class="py-10 text-center bg-gray-50">
+    <h2 class="text-2xl font-semibold mb-3">Біз туралы</h2>
+    <p class="max-w-2xl mx-auto">SkillMatch – жасанды интеллект негізінде мамандық таңдауға көмектесетін веб-жоба. Біздің мақсатымыз – әрбір жастың өз қабілетіне сай кәсіби бағыт табуына жәрдем беру.</p>
+  </section>
+
+  <!-- Team -->
+  <section class="py-10 bg-white text-center">
+    <h2 class="text-2xl font-semibold mb-4">Команда</h2>
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-4xl mx-auto">
+      <div class="bg-gray-100 p-4 rounded-xl shadow">
+        <h3 class="font-bold">Ayan</h3>
+        <p>Жоба жетекшісі</p>
+      </div>
+      <div class="bg-gray-100 p-4 rounded-xl shadow">
+        <h3 class="font-bold">Aliya</h3>
+        <p>Бағдарламалаушы</p>
+      </div>
+      <div class="bg-gray-100 p-4 rounded-xl shadow">
+        <h3 class="font-bold">Daulet</h3>
+        <p>Дизайнер</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Contact -->
+  <footer class="bg-blue-600 text-white text-center p-5">
+    <p>Байланыс: skillmatch.kz@gmail.com | © 2025 SkillMatch</p>
+  </footer>
+
+  <script>
+    const questions = [
+      {q: 'Қай пән саған көбірек ұнайды?', a: ['Математика', 'Биология', 'Тарих', 'Информатика']},
+      {q: 'Қай әрекет саған қызық?', a: ['Есеп шығару', 'Адамдарға көмектесу', 'Жазу және зерттеу', 'Бағдарлама жазу']},
+      {q: 'Қай ортада жұмыс істегің келеді?', a: ['Офис', 'Мектеп/аурухана', 'Ғылыми институт', 'IT компания']},
+      {q: 'Қай қасиетіңді ерекше деп ойлайсың?', a: ['Логика', 'Эмпатия', 'Шығармашылық', 'Талдау қабілеті']},
+    ];
+
+    let current = 0;
+    let scores = {tech: 0, med: 0, art: 0, sci: 0};
+
+    function startTest() {
+      document.getElementById('test-section').classList.remove('hidden');
+      document.getElementById('result-section').classList.add('hidden');
+      current = 0;
+      scores = {tech: 0, med: 0, art: 0, sci: 0};
+      showQuestion();
+    }
+
+    function showQuestion() {
+      const q = questions[current];
+      document.getElementById('question').textContent = q.q;
+      const answersDiv = document.getElementById('answers');
+      answersDiv.innerHTML = '';
+      q.a.forEach((ans, index) => {
+        const btn = document.createElement('button');
+        btn.textContent = ans;
+        btn.className = 'block w-full bg-blue-500 text-white py-2 rounded-xl hover:bg-blue-600';
+        btn.onclick = () => answer(index);
+        answersDiv.appendChild(btn);
+      });
+    }
+
+    function answer(i) {
+      if (i === 0) scores.tech++;
+      if (i === 1) scores.med++;
+      if (i === 2) scores.art++;
+      if (i === 3) scores.sci++;
+      current++;
+      if (current < questions.length) showQuestion();
+      else showResult();
+    }
+
+    function showResult() {
+      document.getElementById('test-section').classList.add('hidden');
+      document.getElementById('result-section').classList.remove('hidden');
+      const maxKey = Object.keys(scores).reduce((a, b) => scores[a] > scores[b] ? a : b);
+      let results = [];
+      if (maxKey === 'tech') results = ['Бағдарламашы', 'Инженер', 'Data Analyst'];
+      if (maxKey === 'med') results = ['Психолог', 'Мұғалім', 'Медицина қызметкері'];
+      if (maxKey === 'art') results = ['Журналист', 'Дизайнер', 'Маркетолог'];
+      if (maxKey === 'sci') results = ['Ғалым', 'Зерттеуші', 'Физик'];
+
+      const list = document.getElementById('result-list');
+      list.innerHTML = results.map(r => `<div class='p-3 bg-gray-100 rounded-xl shadow'>${r}</div>`).join('');
+    }
+  </script>
+</body>
+</html>
